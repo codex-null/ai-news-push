@@ -328,7 +328,10 @@ def build_bark_body(news: list[dict[str, Any]], markets: dict[str, dict[str, Any
     lines.extend(["", "📰 重点新闻"])
     for item in news[:3]:
         lines.append(f"· {shorten(item['title'], 68)}")
-    lines.extend(["", f"📊 查看可视化报告：{report_url}"])
+    if report_url:
+        lines.extend(["", f"\U0001f4ca \u67e5\u770b\u53ef\u89c6\u5316\u62a5\u544a\uff1a{report_url}"])
+    else:
+        lines.extend(["", "\U0001f4ce \u70b9\u51fb\u901a\u77e5\u6253\u5f00\u5934\u6761\u539f\u6587"])
     return "\n".join(lines)
 
 
@@ -401,7 +404,7 @@ def main() -> int:
         top_url = news[0].get("url", "") if news else ""
         push_target = report_url or top_url
         try:
-            result = push_bark(f"📈 经济早报 · {now.strftime('%m/%d')}", build_bark_body(news, markets, report_url or str(report_path.resolve())), push_target)
+            result = push_bark(f"📈 经济早报 · {now.strftime('%m/%d')}", build_bark_body(news, markets, report_url), push_target)
             print(f"✅ Bark 推送完成：{shorten(result, 120)}")
         except Exception as exc:
             print(f"[WARN] Bark 推送失败：{exc}", file=sys.stderr)

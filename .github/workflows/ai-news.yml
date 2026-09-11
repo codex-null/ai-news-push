@@ -1,0 +1,32 @@
+﻿name: AI 资讯每日推送
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Generate and push
+        run: python ai_news_push.py
+        env:
+          BARK_KEY: ${{ secrets.BARK_KEY }}
+          REPORT_URL: ${{ vars.REPORT_URL }}
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: economic-news-report
+          path: reports/
+          if-no-files-found: warn
