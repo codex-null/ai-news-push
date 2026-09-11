@@ -1,0 +1,25 @@
+name: AI 资讯每日推送
+
+on:
+  schedule:
+    # UTC 0:00 = 北京时间 08:00，正好对齐 AI HOT 日报生成时间
+    - cron: '0 0 * * *'
+  workflow_dispatch:   # 允许手动点一下立即跑
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python3 ai_news_push.py
+        env:
+          PUSH_CHANNEL: ${{ secrets.PUSH_CHANNEL }}     # bark / serverchan / email
+          BARK_KEY: ${{ secrets.BARK_KEY }}
+          SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
